@@ -1,0 +1,582 @@
+# Конфигурация модуля Privacy Analytics
+
+# Основные настройки
+general:
+  enabled: true
+  log_level: "INFO"
+  data_retention_days: 365
+  debug: false
+
+# Настройки мониторинга
+monitoring:
+  server:
+    enabled: true
+    interval_seconds: 60
+    metrics:
+      - cpu_percent
+      - ram_percent
+      - disk_percent
+      - network_io
+  
+  performance:
+    enabled: true
+    interval_seconds: 30
+    track_api_response_times: true
+    track_db_query_times: true
+    track_error_rates: true
+  
+  security:
+    enabled: true
+    interval_seconds: 300
+    track_failed_logins: true
+    track_suspicious_activity: true
+    max_failed_logins: 5
+  
+  business:
+    enabled: true
+    interval_seconds: 3600
+    track_subscriptions: true
+    track_revenue: true
+    track_active_users: true
+
+# Настройки аналитики
+analytics:
+  data_processing:
+    enabled: true
+    anonymization_level: "full"  # full, partial, none
+    aggregation_interval_seconds: 3600
+    batch_size: 1000
+  
+  metrics:
+    enabled: true
+    calculate_kpis: true
+    calculate_trends: true
+    calculate_correlations: true
+  
+  reports:
+    enabled: true
+    generate_daily: true
+    generate_weekly: true
+    generate_monthly: true
+    auto_generate: true
+
+# Настройки дашбордов
+dashboards:
+  realtime:
+    enabled: true
+    update_interval_seconds: 5
+    max_data_points: 1000
+  
+  business:
+    enabled: true
+    update_interval_seconds: 60
+    show_trends: true
+    show_predictions: true
+  
+  admin:
+    enabled: true
+    update_interval_seconds: 30
+    show_system_health: true
+    show_security_events: true
+
+# Настройки алертов
+alerts:
+  enabled: true
+  channels:
+    telegram:
+      enabled: true
+      bot_token: "YOUR_BOT_TOKEN"
+      chat_id: "YOUR_CHAT_ID"
+      send_photos: true
+    
+    email:
+      enabled: true
+      smtp_server: "smtp.example.com"
+      smtp_port: 587
+      smtp_user: "alerts@example.com"
+      smtp_password: "password"
+      sender_email: "alerts@example.com"
+      recipient_emails:
+        - "admin@example.com"
+        - "security@example.com"
+    
+    webhook:
+      enabled: true
+      url: "https://webhook.example.com/alerts"
+      timeout_seconds: 30
+  
+  thresholds:
+    cpu_usage: 80.0
+    ram_usage: 85.0
+    disk_usage: 90.0
+    failed_logins: 5
+    error_rate: 0.05
+    response_time: 1000.0
+  
+  escalation:
+    enabled: true
+    rules:
+      - name: "Critical Alert Escalation"
+        condition: "severity == 'critical' and triggered_count > 1"
+        action: "notify_admin"
+        delay_minutes: 5
+      
+      - name: "Repeated Warning Escalation"
+        condition: "severity == 'warning' and triggered_count >= 3"
+        action: "notify_security"
+        delay_minutes: 15
+
+# Настройки API
+api:
+  enabled: true
+  prefix: "/privacy-analytics"
+  api_key: "supersecretapikey"
+  rate_limit:
+    enabled: true
+    requests_per_minute: 100
+    burst_size: 20
+  
+  authentication:
+    enabled: true
+    methods:
+      - "api_key"
+      - "jwt"
+  
+  cors:
+    enabled: true
+    allowed_origins:
+      - "http://localhost:3000"
+      - "https://admin.example.com"
+    allowed_methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+    allowed_headers:
+      - "Content-Type"
+      - "Authorization"
+      - "X-API-Key"
+
+# Настройки веб-интерфейса
+web:
+  enabled: true
+  path_prefix: "/admin/privacy-analytics"
+  secret_key: "another_super_secret_key"
+  debug: false
+  
+  templates:
+    theme: "dark"  # dark, light, auto
+    language: "ru"  # ru, en
+  
+  static_files:
+    enabled: true
+    cache_control: "max-age=3600"
+  
+  security:
+    csrf_protection: true
+    session_timeout_minutes: 60
+    max_login_attempts: 5
+
+# Настройки приватности
+privacy:
+  # Уровни анонимизации
+  anonymization:
+    level: "full"  # full, partial, none
+    methods:
+      - "hashing"
+      - "pseudonymization"
+      - "generalization"
+      - "suppression"
+    
+    # Поля для анонимизации
+    fields:
+      - "user_id"
+      - "ip_address"
+      - "email"
+      - "phone"
+      - "full_name"
+      - "device_id"
+  
+  # Управление согласиями
+  consent:
+    enabled: true
+    require_explicit: true
+    allow_implicit: false
+    expiry_days: 365
+    renewal_reminder_days: 30
+    
+    # Цели обработки
+    purposes:
+      - "analytics"
+      - "monitoring"
+      - "security"
+      - "business_analytics"
+      - "performance_optimization"
+      - "customer_support"
+      - "marketing"
+      - "research"
+  
+  # Управление хранением данных
+  data_retention:
+    enabled: true
+    policies:
+      personal_data:
+        retention_days: 365
+        anonymization_required: true
+        encryption_required: true
+        backup_required: true
+        deletion_method: "secure_delete"
+      
+      sensitive_data:
+        retention_days: 180
+        anonymization_required: true
+        encryption_required: true
+        backup_required: false
+        deletion_method: "secure_delete"
+      
+      technical_data:
+        retention_days: 90
+        anonymization_required: false
+        encryption_required: false
+        backup_required: false
+        deletion_method: "standard_delete"
+      
+      analytics_data:
+        retention_days: 730
+        anonymization_required: true
+        encryption_required: false
+        backup_required: true
+        deletion_method: "standard_delete"
+      
+      log_data:
+        retention_days: 30
+        anonymization_required: true
+        encryption_required: false
+        backup_required: false
+        deletion_method: "standard_delete"
+      
+      audit_data:
+        retention_days: 2555  # 7 лет
+        anonymization_required: false
+        encryption_required: true
+        backup_required: true
+        deletion_method: "secure_delete"
+      
+      consent_data:
+        retention_days: 2555  # 7 лет
+        anonymization_required: false
+        encryption_required: true
+        backup_required: true
+        deletion_method: "secure_delete"
+      
+      business_data:
+        retention_days: 1095  # 3 года
+        anonymization_required: true
+        encryption_required: true
+        backup_required: true
+        deletion_method: "secure_delete"
+  
+  # Аудит
+  audit:
+    enabled: true
+    log_retention_days: 2555  # 7 лет
+    track_data_access: true
+    track_data_modification: true
+    track_data_deletion: true
+    track_consent_changes: true
+    track_admin_actions: true
+    track_user_actions: true
+    track_system_events: true
+    
+    # События для аудита
+    events:
+      - "data_access"
+      - "data_modification"
+      - "data_deletion"
+      - "privacy_check"
+      - "consent_given"
+      - "consent_withdrawn"
+      - "data_breach"
+      - "admin_action"
+      - "user_action"
+      - "system_event"
+  
+  # Соответствие GDPR
+  gdpr:
+    enabled: true
+    dpo_email: "dpo@example.com"
+    privacy_email: "privacy@example.com"
+    security_email: "security@example.com"
+    
+    # Права субъектов данных
+    subject_rights:
+      - "access"
+      - "rectification"
+      - "erasure"
+      - "portability"
+      - "objection"
+      - "restriction"
+      - "withdrawal"
+    
+    # Уведомления о нарушениях
+    breach_notification:
+      enabled: true
+      notify_authorities: true
+      notify_subjects: true
+      notification_delay_hours: 72
+  
+  # Политики приватности
+  policies:
+    default:
+      name: "Основная политика приватности"
+      version: "1.0"
+      effective_date: "2024-01-01"
+      privacy_level: "standard"
+      data_categories:
+        - "personal_data"
+        - "technical_data"
+        - "analytics_data"
+      processing_purposes:
+        - "service_provision"
+        - "analytics"
+        - "security"
+      legal_basis: "consent"
+      retention_period: 365
+      anonymization_required: true
+      encryption_required: true
+      data_sharing:
+        third_parties: false
+        international_transfers: false
+        government_access: "with_warrant"
+      user_rights:
+        - "access"
+        - "rectification"
+        - "erasure"
+        - "portability"
+        - "objection"
+      contact_info:
+        dpo_email: "dpo@example.com"
+        privacy_email: "privacy@example.com"
+        phone: "+1-555-0123"
+
+# Настройки базы данных
+database:
+  # Если модуль использует отдельную БД
+  url: "sqlite:///./privacy_analytics.db"
+  pool_size: 10
+  max_overflow: 20
+  pool_timeout: 30
+  pool_recycle: 3600
+  
+  # Миграции
+  migrations:
+    enabled: true
+    auto_upgrade: true
+  
+  # Индексы
+  indexes:
+    - "timestamp"
+    - "user_id"
+    - "event_type"
+    - "severity"
+
+# Настройки кэширования
+cache:
+  enabled: true
+  backend: "memory"  # memory, redis, memcached
+  ttl_seconds: 300
+  max_size: 10000
+  
+  # Redis настройки (если используется)
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 0
+    password: null
+    ssl: false
+
+# Настройки логирования
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  handlers:
+    - "console"
+    - "file"
+  
+  # Файловое логирование
+  file:
+    enabled: true
+    path: "logs/privacy_analytics.log"
+    max_size_mb: 100
+    backup_count: 5
+    rotation: "daily"
+  
+  # Структурированное логирование
+  structured:
+    enabled: true
+    format: "json"
+    fields:
+      - "timestamp"
+      - "level"
+      - "message"
+      - "module"
+      - "user_id"
+      - "request_id"
+
+# Настройки безопасности
+security:
+  # Шифрование
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_rotation_days: 90
+  
+  # Хеширование
+  hashing:
+    algorithm: "sha256"
+    salt_length: 32
+    iterations: 100000
+  
+  # API безопасность
+  api_security:
+    rate_limiting: true
+    ip_whitelist: []
+    ip_blacklist: []
+    request_size_limit_mb: 10
+  
+  # Сессии
+  sessions:
+    enabled: true
+    secret_key: "session_secret_key"
+    timeout_minutes: 60
+    secure: true
+    httponly: true
+    samesite: "strict"
+
+# Настройки производительности
+performance:
+  # Асинхронная обработка
+  async_processing:
+    enabled: true
+    max_workers: 10
+    queue_size: 1000
+  
+  # Батчинг
+  batching:
+    enabled: true
+    batch_size: 100
+    flush_interval_seconds: 30
+  
+  # Оптимизация запросов
+  query_optimization:
+    enabled: true
+    max_query_time_seconds: 30
+    query_cache_ttl_seconds: 300
+  
+  # Мониторинг производительности
+  monitoring:
+    enabled: true
+    track_response_times: true
+    track_memory_usage: true
+    track_cpu_usage: true
+    track_disk_usage: true
+
+# Настройки уведомлений
+notifications:
+  # Шаблоны уведомлений
+  templates:
+    alert:
+      subject: "SoloBot Alert: {alert_type}"
+      body: "Alert: {message}\nSeverity: {severity}\nTime: {timestamp}"
+    
+    report:
+      subject: "SoloBot Report: {report_type}"
+      body: "Report: {report_name}\nPeriod: {period}\nSummary: {summary}"
+    
+    consent:
+      subject: "SoloBot Consent: {action}"
+      body: "Consent {action} for purpose: {purpose}\nSubject: {subject_id}"
+  
+  # Настройки доставки
+  delivery:
+    retry_attempts: 3
+    retry_delay_seconds: 60
+    timeout_seconds: 30
+    batch_size: 50
+
+# Настройки интеграции
+integrations:
+  # Интеграция с основным ботом
+  main_bot:
+    enabled: true
+    webhook_url: "http://localhost:8000/webhook/privacy-analytics"
+    api_key: "integration_api_key"
+  
+  # Интеграция с внешними сервисами
+  external_services:
+    # Telegram
+    telegram:
+      enabled: true
+      bot_token: "YOUR_BOT_TOKEN"
+      webhook_url: "https://yourdomain.com/webhook/telegram"
+    
+    # Email
+    email:
+      enabled: true
+      smtp_server: "smtp.example.com"
+      smtp_port: 587
+      smtp_user: "noreply@example.com"
+      smtp_password: "password"
+    
+    # Webhooks
+    webhooks:
+      enabled: true
+      endpoints:
+        - url: "https://webhook1.example.com"
+          events: ["alert", "report"]
+        - url: "https://webhook2.example.com"
+          events: ["consent", "audit"]
+
+# Настройки разработки
+development:
+  debug: false
+  hot_reload: false
+  profiling: false
+  test_mode: false
+  
+  # Тестовые данные
+  test_data:
+    enabled: false
+    generate_sample_data: false
+    sample_data_size: 1000
+  
+  # Отладочная информация
+  debug_info:
+    enabled: false
+    log_sql_queries: false
+    log_api_requests: false
+    log_performance_metrics: false
+
+# Настройки развертывания
+deployment:
+  # Окружение
+  environment: "production"  # development, staging, production
+  
+  # Масштабирование
+  scaling:
+    horizontal: true
+    max_instances: 10
+    min_instances: 1
+  
+  # Health checks
+  health_checks:
+    enabled: true
+    interval_seconds: 30
+    timeout_seconds: 10
+    failure_threshold: 3
+  
+  # Graceful shutdown
+  shutdown:
+    timeout_seconds: 30
+    wait_for_requests: true
+    drain_connections: true
