@@ -28,14 +28,37 @@
 
 Модуль автоматически загружается в SoloBot при запуске. Никаких дополнительных действий не требуется.
 
-### 2. Ручная установка зависимостей
+### 2. Автоматическая установка зависимостей
+
+Модуль автоматически устанавливает зависимости при загрузке. Никаких дополнительных действий не требуется.
+
+#### Ручная установка (если нужна)
 
 ```bash
-# Установка зависимостей
-pip install -r modules/privacy_analytics/requirements.txt
+# Использование встроенного скрипта
+python modules/privacy_analytics/install_deps.py
 
-# Или установка конкретных пакетов
-pip install fastapi flask sqlalchemy psutil httpx pandas numpy cryptography faker python-telegram-bot
+# Или через менеджер зависимостей
+python -m modules.privacy_analytics.dependency_manager --install --verbose
+
+# Или традиционный способ
+pip install -r modules/privacy_analytics/requirements.txt
+```
+
+#### Управление зависимостями
+
+```bash
+# Проверка зависимостей
+python -m modules.privacy_analytics.dependency_manager --check --verbose
+
+# Создание lock файла
+python -m modules.privacy_analytics.dependency_manager --lock
+
+# Установка из lock файла
+python -m modules.privacy_analytics.dependency_manager --install-lock
+
+# Очистка кэша
+python -m modules.privacy_analytics.dependency_manager --cleanup
 ```
 
 ### 3. Установка с Docker
