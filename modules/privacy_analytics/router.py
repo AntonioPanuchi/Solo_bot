@@ -97,8 +97,7 @@ if settings.MONITORING_ENABLED:
     monitoring_thread.start()
     logger.info("[Privacy Analytics] Система мониторинга запущена")
 
-# Регистрируем хуки для интеграции с основным ботом
-@register_hook("admin_panel")
+# Функции хуков для интеграции с основным ботом
 async def admin_panel_hook(admin_role: str, **kwargs) -> list:
     """Добавляем кнопки аналитики в админ-панель"""
     if not settings.ANALYTICS_ENABLED:
@@ -130,7 +129,6 @@ async def admin_panel_hook(admin_role: str, **kwargs) -> list:
     
     return buttons
 
-@register_hook("system_startup")
 async def system_startup_hook(**kwargs):
     """Инициализация при запуске системы"""
     if settings.ANALYTICS_ENABLED:
@@ -141,6 +139,10 @@ async def system_startup_hook(**kwargs):
             compliance_status = await privacy_checker.audit_system_compliance()
             if not compliance_status:
                 logger.warning("[Privacy Analytics] Обнаружены нарушения требований приватности")
+
+# Регистрируем хуки
+register_hook("admin_panel", admin_panel_hook)
+register_hook("system_startup", system_startup_hook)
 
 # Обработчики команд
 @router.callback_query(lambda c: c.data.startswith("privacy_analytics:"))

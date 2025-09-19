@@ -6,12 +6,33 @@ import subprocess
 import sys
 import os
 import importlib
-import pkg_resources
 import json
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 import logging
 from datetime import datetime
+
+# Современная замена для pkg_resources
+try:
+    from importlib.metadata import version, distributions
+    from importlib.metadata import PackageNotFoundError
+except ImportError:
+    # Fallback для старых версий Python
+    try:
+        from importlib_metadata import version, distributions
+        from importlib_metadata import PackageNotFoundError
+    except ImportError:
+        # Последний fallback - используем pkg_resources
+        import pkg_resources
+        def version(package_name):
+            try:
+                return pkg_resources.get_distribution(package_name).version
+            except pkg_resources.DistributionNotFound:
+                raise PackageNotFoundError(package_name)
+        def distributions():
+            return pkg_resources.working_set
+        class PackageNotFoundError(Exception):
+            pass
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +107,7 @@ class DependencyManager:
             # Проверяем установлен ли пакет
             try:
                 importlib.import_module(name)
-                installed_version = pkg_resources.get_distribution(name).version
+                installed_version = version(name)
                 
                 if required_version:
                     # Сравниваем версии
@@ -147,8 +168,8 @@ class DependencyManager:
             # Обновляем кэш
             name = package_spec.split('>=')[0].split('==')[0].split('>')[0].split('<')[0].strip()
             try:
-                version = pkg_resources.get_distribution(name).version
-                self.installed_packages[name] = version
+                installed_version = version(name)
+                self.installed_packages[name] = installed_version
             except:
                 pass
             

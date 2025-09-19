@@ -2,7 +2,7 @@
 Система приватности и соответствия требованиям
 """
 
-from .privacy_checker import PrivacyChecker
+from .privacy_checker import PrivacyChecker, PrivacyComplianceChecker
 from .data_anonymizer import DataAnonymizer
 from .gdpr_compliance import GDPRCompliance
 from .audit_logger import AuditLogger, AuditEventType, AuditSeverity
@@ -12,6 +12,7 @@ from .privacy_policy import PrivacyPolicyManager, PrivacyLevel, DataSubject, Leg
 
 __all__ = [
     "PrivacyChecker",
+    "PrivacyComplianceChecker",
     "DataAnonymizer", 
     "GDPRCompliance",
     "AuditLogger",

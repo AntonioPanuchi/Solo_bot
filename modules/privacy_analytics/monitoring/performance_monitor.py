@@ -44,7 +44,7 @@ class PerformanceMonitor:
             }
             
             # Проверяем соответствие требованиям приватности
-            if not self.privacy_checker.validate_metrics(metrics):
+            if not await self.privacy_checker.validate_metrics(metrics):
                 logger.warning("[Performance Monitor] Метрики не прошли проверку приватности")
                 return
             

@@ -71,7 +71,7 @@ class ServerMonitor:
             }
             
             # Проверяем соответствие требованиям приватности
-            if not self.privacy_checker.validate_metrics(metrics):
+            if not await self.privacy_checker.validate_metrics(metrics):
                 logger.warning(f"[Server Monitor] Метрики сервера {server_id} не прошли проверку приватности")
                 return
             

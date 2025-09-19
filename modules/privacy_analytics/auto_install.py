@@ -6,10 +6,29 @@ import subprocess
 import sys
 import os
 import importlib
-import pkg_resources
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 import logging
+
+# Современная замена для pkg_resources
+try:
+    from importlib.metadata import version
+    from importlib.metadata import PackageNotFoundError
+except ImportError:
+    # Fallback для старых версий Python
+    try:
+        from importlib_metadata import version
+        from importlib_metadata import PackageNotFoundError
+    except ImportError:
+        # Последний fallback - используем pkg_resources
+        import pkg_resources
+        def version(package_name):
+            try:
+                return pkg_resources.get_distribution(package_name).version
+            except pkg_resources.DistributionNotFound:
+                raise PackageNotFoundError(package_name)
+        class PackageNotFoundError(Exception):
+            pass
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -34,13 +53,13 @@ class DependencyInstaller:
         except ImportError:
             return False
     
-    def get_package_version(self, package_name: str) -> Optional[str]:
-        """Получение версии установленного пакета"""
-        try:
-            clean_name = package_name.split('>=')[0].split('==')[0].split('>')[0].split('<')[0]
-            return pkg_resources.get_distribution(clean_name).version
-        except:
-            return None
+        def get_package_version(self, package_name: str) -> Optional[str]:
+            """Получение версии установленного пакета"""
+            try:
+                clean_name = package_name.split('>=')[0].split('==')[0].split('>')[0].split('<')[0]
+                return version(clean_name)
+            except:
+                return None
     
     def install_package(self, package: str) -> bool:
         """Установка одного пакета"""

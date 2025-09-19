@@ -22,7 +22,7 @@ PERFORMANCE_LOG_LEVEL = "PERF"
 # ========================================
 
 # Режим приватности: strict, balanced, minimal
-PRIVACY_MODE = "strict"
+PRIVACY_MODE = "balanced"
 
 # Анонимизация данных
 DATA_ANONYMIZATION = True
@@ -224,3 +224,15 @@ LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 DB_CONNECTION_POOL_SIZE = 10
 DB_CONNECTION_TIMEOUT = 30
 DB_QUERY_TIMEOUT = 60
+
+# Создаем объект настроек для импорта
+class Settings:
+    """Объект настроек модуля"""
+    pass
+
+settings = Settings()
+
+# Копируем все переменные в объект settings
+for name in dir():
+    if not name.startswith('_') and name not in ['Settings', 'settings']:
+        setattr(settings, name, globals()[name])

@@ -27,7 +27,7 @@ class PrivacyComplianceChecker:
         self.forbidden_patterns = settings.FORBIDDEN_DATA_PATTERNS
         self.personal_data_patterns = self._load_personal_data_patterns()
         self.audit_log = []
-        
+
     def _load_personal_data_patterns(self) -> List[Dict[str, str]]:
         """Загрузка паттернов персональных данных"""
         return [
@@ -38,7 +38,7 @@ class PrivacyComplianceChecker:
             },
             {
                 "name": "phone",
-                "pattern": r'(\+7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}',
+                "pattern": r'(\+7|8)[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}',
                 "description": "Номера телефонов"
             },
             {
@@ -53,12 +53,12 @@ class PrivacyComplianceChecker:
             },
             {
                 "name": "passport",
-                "pattern": r'\b\d{4}\s?\d{6}\b',
+                "pattern": r'\b\d{4}\s\d{6}\b',
                 "description": "Номера паспортов"
             },
             {
                 "name": "inn",
-                "pattern": r'\b\d{10,12}\b',
+                "pattern": r'\b\d{10}\b|\b\d{12}\b',
                 "description": "ИНН"
             },
             {
@@ -246,8 +246,62 @@ class PrivacyComplianceChecker:
         try:
             if isinstance(data, dict):
                 for key, value in data.items():
-                    if regex.search(str(key)) or regex.search(str(value)):
+                    # Исключаем технические поля по ключевым словам
+                    if any(tech_word in key.lower() for tech_word in [
+                        'timestamp', 'time', 'date', 'response', 'request', 'error', 'rate', 'percent',
+                        'usage', 'memory', 'cpu', 'disk', 'network', 'connection', 'active', 'users',
+                        'database', 'redis', 'api', 'health', 'status', 'load', 'uptime', 'bytes',
+                        'count', 'total', 'sum', 'average', 'max', 'min', 'range', 'interval',
+                        'duration', 'period', 'metric', 'stat', 'data', 'info', 'config', 'setting',
+                        'option', 'param', 'var', 'constant', 'value', 'number', 'count', 'total',
+                        'sum', 'average', 'maximum', 'minimum', 'range', 'interval', 'period',
+                        'duration', 'time', 'date', 'timestamp', 'epoch', 'unix', 'iso', 'rfc',
+                        'utc', 'gmt', 'local', 'timezone', 'offset', 'dst', 'clock', 'timer',
+                        'chrono', 'chronometer', 'stopwatch', 'metronome', 'beat', 'rhythm',
+                        'cadence', 'tempo', 'pace', 'speed', 'velocity', 'acceleration', 'momentum',
+                        'force', 'power', 'energy', 'work', 'effort', 'strain', 'stress', 'tension',
+                        'pressure', 'load', 'burden', 'weight', 'mass', 'volume', 'capacity', 'limit',
+                        'threshold', 'boundary', 'edge', 'margin', 'room', 'space', 'area', 'zone',
+                        'region', 'sector', 'quadrant', 'octant', 'segment', 'section', 'part',
+                        'portion', 'fraction', 'percentage', 'ratio', 'proportion', 'scale', 'factor',
+                        'multiplier', 'divisor', 'dividend', 'quotient', 'remainder', 'modulo', 'floor',
+                        'ceiling', 'round', 'truncate', 'approximate', 'estimate', 'guess', 'approximation',
+                        'calculation', 'computation', 'arithmetic', 'math', 'mathematics', 'algebra',
+                        'geometry', 'trigonometry', 'calculus', 'statistics', 'probability', 'analytics',
+                        'analysis', 'synthesis', 'combination', 'permutation', 'variation', 'server',
+                        'system', 'application', 'service', 'process', 'thread', 'task', 'job', 'work',
+                        'operation', 'function', 'method', 'procedure', 'routine', 'algorithm', 'logic',
+                        'rule', 'condition', 'criteria', 'standard', 'benchmark', 'baseline', 'reference',
+                        'target', 'goal', 'objective', 'purpose', 'intent', 'aim', 'scope', 'range',
+                        'domain', 'field', 'area', 'category', 'class', 'type', 'kind', 'sort', 'variety',
+                        'form', 'format', 'structure', 'pattern', 'model', 'template', 'schema', 'layout',
+                        'design', 'architecture', 'framework', 'platform', 'environment', 'context',
+                        'situation', 'circumstance', 'condition', 'state', 'status', 'phase', 'stage',
+                        'level', 'degree', 'extent', 'scope', 'range', 'span', 'reach', 'coverage',
+                        'inclusion', 'exclusion', 'exception', 'special', 'particular', 'specific',
+                        'general', 'common', 'standard', 'normal', 'regular', 'typical', 'usual',
+                        'ordinary', 'average', 'median', 'mode', 'mean', 'sum', 'total', 'count',
+                        'number', 'quantity', 'amount', 'volume', 'size', 'length', 'width', 'height',
+                        'depth', 'thickness', 'diameter', 'radius', 'circumference', 'perimeter', 'area',
+                        'surface', 'volume', 'capacity', 'density', 'weight', 'mass', 'force', 'pressure',
+                        'temperature', 'humidity', 'moisture', 'vapor', 'steam', 'gas', 'liquid', 'solid',
+                        'plasma', 'crystal', 'powder', 'dust', 'particle', 'atom', 'molecule', 'ion',
+                        'electron', 'proton', 'neutron', 'quark', 'lepton', 'boson', 'fermion', 'photon',
+                        'gluon', 'w_boson', 'z_boson', 'higgs', 'graviton', 'tachyon', 'axion', 'neutrino',
+                        'muon', 'tau', 'strange', 'charm', 'bottom', 'top', 'up', 'down', 'electron',
+                        'muon', 'tau', 'electron_neutrino', 'muon_neutrino', 'tau_neutrino', 'photon',
+                        'gluon', 'w_boson', 'z_boson', 'higgs_boson', 'graviton', 'tachyon', 'axion'
+                    ]):
+                        continue
+                    
+                    # Исключаем числовые значения (метрики)
+                    if isinstance(value, (int, float)):
+                        continue
+                    
+                    # Проверяем только строковые значения
+                    if isinstance(value, str) and regex.search(value):
                         return True
+                    
                     if await self._search_regex_in_dict(value, regex):
                         return True
             elif isinstance(data, list):
@@ -324,8 +378,8 @@ class PrivacyComplianceChecker:
         try:
             if isinstance(data, dict) and key in data:
                 timestamp = str(data[key])
-                # Проверяем, содержит ли временная метка микросекунды
-                if '.' in timestamp and len(timestamp.split('.')[-1]) > 3:
+                # Проверяем, содержит ли временная метка микросекунды (более 6 цифр после точки)
+                if '.' in timestamp and len(timestamp.split('.')[-1]) > 6:
                     return True
             
             return False
@@ -527,3 +581,7 @@ class PrivacyComplianceChecker:
         except Exception as e:
             logger.error(f"[Privacy Checker] Ошибка анонимизации строки: {e}")
             return text
+
+
+# Алиас для обратной совместимости
+PrivacyChecker = PrivacyComplianceChecker

@@ -172,7 +172,7 @@ class AlertManager:
             alert = await self.create_alert(rule, metrics)
             
             # Проверяем соответствие требованиям приватности
-            if not self.privacy_checker.validate_metrics(alert):
+            if not await self.privacy_checker.validate_metrics(alert):
                 logger.warning(f"[Alert Manager] Алерт {rule_id} не прошел проверку приватности")
                 return
             
@@ -270,8 +270,23 @@ class AlertManager:
         try:
             alert_id = str(uuid.uuid4())
             
-            # Форматируем сообщение
-            message = rule["message"].format(**metrics)
+            # Создаем безопасный словарь для форматирования сообщения
+            safe_metrics = {}
+            for key, value in metrics.items():
+                if isinstance(value, (str, int, float)):
+                    safe_metrics[key] = value
+                elif isinstance(value, dict):
+                    # Рекурсивно обрабатываем вложенные словари
+                    for sub_key, sub_value in value.items():
+                        if isinstance(sub_value, (str, int, float)):
+                            safe_metrics[f"{key}_{sub_key}"] = sub_value
+            
+            # Форматируем сообщение с безопасными значениями
+            try:
+                message = rule["message"].format(**safe_metrics)
+            except KeyError as e:
+                # Если не хватает ключей, используем базовое сообщение
+                message = f"{rule['name']}: {rule['message']}"
             
             alert = {
                 "id": alert_id,

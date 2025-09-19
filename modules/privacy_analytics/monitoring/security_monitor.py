@@ -45,7 +45,7 @@ class SecurityMonitor:
             }
             
             # Проверяем соответствие требованиям приватности
-            if not self.privacy_checker.validate_metrics(security_events):
+            if not await self.privacy_checker.validate_metrics(security_events):
                 logger.warning("[Security Monitor] События безопасности не прошли проверку приватности")
                 return
             
